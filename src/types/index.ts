@@ -6,6 +6,8 @@ export interface Event {
   endTime: string;
   description?: string;
   color?: string;
+  reminderMinutes?: number; // Minutes before event to remind
+  reminderTitle?: string; // Custom reminder title
 }
 
 export interface Todo {

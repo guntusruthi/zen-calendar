@@ -6,7 +6,9 @@ import { TodoList } from '@/components/TodoList';
 import { MemoryGallery } from '@/components/MemoryGallery';
 import { Journal } from '@/components/Journal';
 import { Collections } from '@/components/Collections';
+import { FloatingTodoWidget } from '@/components/FloatingTodoWidget';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useReminders } from '@/hooks/useReminders';
 import { Event, Todo, Memory, JournalEntry, Collection, CollectionFile, ViewMode } from '@/types';
 import { 
   sampleEvents, 
@@ -42,6 +44,9 @@ const Index = () => {
       setIsInitialized(true);
     }
   }, [isInitialized]);
+
+  // Initialize smart reminders
+  useReminders({ events });
 
   // Event handlers
   const handleAddEvent = (event: Omit<Event, 'id'>) => {
@@ -222,6 +227,12 @@ const Index = () => {
           {renderView()}
         </div>
       </main>
+
+      {/* Floating Todo Widget - Always visible */}
+      <FloatingTodoWidget 
+        todos={todos} 
+        onToggleTodo={handleToggleTodo} 
+      />
     </div>
   );
 };
