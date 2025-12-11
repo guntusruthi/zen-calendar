@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Noto Sans JP', 'sans-serif'],
+        display: ['Cinzel', 'serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -57,6 +61,17 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        tanjiro: {
+          green: "hsl(var(--tanjiro-green))",
+          red: "hsl(var(--tanjiro-red))",
+          black: "hsl(var(--tanjiro-black))",
+        },
+        zenitsu: {
+          yellow: "hsl(var(--zenitsu-yellow))",
+          orange: "hsl(var(--zenitsu-orange))",
+        },
+        water: "hsl(var(--water-blue))",
+        lightning: "hsl(var(--lightning))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -65,25 +80,33 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "float": "float 3s ease-in-out infinite",
+        "shimmer": "shimmer 2s linear infinite",
+      },
+      backgroundImage: {
+        'gradient-tanjiro': 'var(--gradient-tanjiro)',
+        'gradient-zenitsu': 'var(--gradient-zenitsu)',
+        'gradient-water': 'var(--gradient-water)',
+        'gradient-lightning': 'var(--gradient-lightning)',
       },
     },
   },
