@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Bell, BellOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import { Event } from '@/types';
+import { cn } from '@/lib/utils';
 
 interface EventModalProps {
   isOpen: boolean;
@@ -20,11 +21,22 @@ const timeSlots = [
   '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00'
 ];
 
+const reminderOptions = [
+  { value: 0, label: 'No reminder' },
+  { value: 5, label: '5 minutes before' },
+  { value: 10, label: '10 minutes before' },
+  { value: 15, label: '15 minutes before' },
+  { value: 30, label: '30 minutes before' },
+  { value: 60, label: '1 hour before' },
+];
+
 export function EventModal({ isOpen, onClose, onSave, selectedDate }: EventModalProps) {
   const [title, setTitle] = useState('');
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
   const [description, setDescription] = useState('');
+  const [reminderMinutes, setReminderMinutes] = useState(15);
+  const [reminderTitle, setReminderTitle] = useState('');
 
   if (!isOpen) return null;
 
@@ -38,12 +50,16 @@ export function EventModal({ isOpen, onClose, onSave, selectedDate }: EventModal
       startTime,
       endTime,
       description,
+      reminderMinutes: reminderMinutes > 0 ? reminderMinutes : undefined,
+      reminderTitle: reminderTitle.trim() || undefined,
     });
 
     setTitle('');
     setStartTime('09:00');
     setEndTime('10:00');
     setDescription('');
+    setReminderMinutes(15);
+    setReminderTitle('');
     onClose();
   };
 
@@ -113,6 +129,44 @@ export function EventModal({ isOpen, onClose, onSave, selectedDate }: EventModal
               className="bg-muted/50 resize-none"
               rows={3}
             />
+          </div>
+
+          {/* Reminder Section */}
+          <div className="space-y-3 p-3 rounded-lg bg-muted/30 border border-border">
+            <div className="flex items-center gap-2">
+              {reminderMinutes > 0 ? (
+                <Bell className="w-4 h-4 text-primary" />
+              ) : (
+                <BellOff className="w-4 h-4 text-muted-foreground" />
+              )}
+              <label className="text-sm font-medium text-foreground">Smart Reminder</label>
+            </div>
+            
+            <div>
+              <select
+                value={reminderMinutes}
+                onChange={(e) => setReminderMinutes(Number(e.target.value))}
+                className="w-full h-10 px-3 rounded-lg border border-input bg-background text-foreground"
+              >
+                {reminderOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {reminderMinutes > 0 && (
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">
+                  Custom reminder title (optional)
+                </label>
+                <Input
+                  value={reminderTitle}
+                  onChange={(e) => setReminderTitle(e.target.value)}
+                  placeholder={`⏰ ${title || 'Event'}`}
+                  className="bg-background text-sm"
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-2">
