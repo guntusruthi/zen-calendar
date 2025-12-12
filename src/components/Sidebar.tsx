@@ -40,8 +40,8 @@ export function Sidebar({ currentView, onViewChange, selectedDate, onSelectDate 
             <Swords className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-display text-lg font-semibold text-foreground">Breath</h1>
-            <p className="text-xs text-muted-foreground">Scheduler</p>
+            <h1 className="font-display text-lg font-semibold text-foreground">Katana</h1>
+            <p className="text-xs text-muted-foreground">Planner</p>
           </div>
         </div>
       </div>

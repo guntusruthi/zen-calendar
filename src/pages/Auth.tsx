@@ -81,9 +81,9 @@ export default function Auth() {
             <Flame className="w-8 h-8 text-primary animate-pulse" />
           </div>
           <h1 className="font-display text-3xl font-bold text-foreground">
-            Demon Slayer
+            Katana
           </h1>
-          <p className="text-muted-foreground mt-1">Personal Event Scheduler</p>
+          <p className="text-muted-foreground mt-1">Personal Planner</p>
         </div>
 
         {/* Auth Card */}
