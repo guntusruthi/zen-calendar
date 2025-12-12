@@ -190,14 +190,6 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* Theme indicator */}
-        <div className="mt-6 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-          <Flame className="w-4 h-4 text-primary" />
-          <span>Tanjiro Theme (Light)</span>
-          <span className="mx-2">|</span>
-          <Zap className="w-4 h-4 text-accent" />
-          <span>Zenitsu Theme (Dark)</span>
-        </div>
       </div>
     </div>
   );
