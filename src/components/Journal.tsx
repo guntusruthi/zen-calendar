@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { Save, Smile, Meh, Frown, Sparkles, Cloud } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Save, Smile, Meh, Frown, Sparkles, Cloud, Mic, Square, Play, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { JournalEntry } from '@/types';
 import { format } from 'date-fns';
+import { useVoiceRecording } from '@/hooks/useVoiceRecording';
 
 interface JournalProps {
   journals: JournalEntry[];
@@ -27,14 +28,25 @@ export function Journal({ journals, selectedDate, onSaveJournal }: JournalProps)
   const [content, setContent] = useState(existingEntry?.content || '');
   const [mood, setMood] = useState<JournalEntry['mood']>(existingEntry?.mood || 'neutral');
   const [isSaved, setIsSaved] = useState(!!existingEntry);
+  
+  const { isRecording, audioUrl, startRecording, stopRecording, clearRecording, error } = useVoiceRecording();
+
+  // Update state when date changes
+  useEffect(() => {
+    const entry = journals.find(j => j.date === dateStr);
+    setContent(entry?.content || '');
+    setMood(entry?.mood || 'neutral');
+    setIsSaved(!!entry);
+  }, [dateStr, journals]);
 
   const handleSave = () => {
-    if (!content.trim()) return;
+    if (!content.trim() && !audioUrl) return;
 
     onSaveJournal({
       content,
       date: dateStr,
       mood,
+      audioUrl: audioUrl || undefined,
     });
 
     setIsSaved(true);
@@ -51,11 +63,62 @@ export function Journal({ journals, selectedDate, onSaveJournal }: JournalProps)
         <Button
           onClick={handleSave}
           variant={isSaved ? "outline" : "default"}
-          disabled={!content.trim()}
+          disabled={!content.trim() && !audioUrl}
         >
           <Save className="w-4 h-4 mr-2" />
           {isSaved ? 'Saved!' : 'Save Entry'}
         </Button>
+      </div>
+
+      {/* Voice Recording Section */}
+      <div className="mb-6 p-4 rounded-xl bg-muted/30 border border-border">
+        <label className="text-sm font-medium text-foreground mb-3 block">Voice Journal</label>
+        
+        {error && (
+          <p className="text-destructive text-sm mb-3">{error}</p>
+        )}
+        
+        <div className="flex items-center gap-3">
+          {!isRecording ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={startRecording}
+              className="flex items-center gap-2"
+            >
+              <Mic className="w-4 h-4 text-primary" />
+              Start Recording
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={stopRecording}
+              className="flex items-center gap-2 animate-pulse"
+            >
+              <Square className="w-4 h-4" />
+              Stop Recording
+            </Button>
+          )}
+          
+          {audioUrl && (
+            <div className="flex items-center gap-2 flex-1">
+              <audio controls src={audioUrl} className="h-10 flex-1" />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={clearRecording}
+              >
+                <Trash2 className="w-4 h-4 text-muted-foreground" />
+              </Button>
+            </div>
+          )}
+        </div>
+        
+        {isRecording && (
+          <p className="text-sm text-primary mt-2 animate-pulse">🎙️ Recording in progress...</p>
+        )}
       </div>
 
       {/* Mood Selector */}

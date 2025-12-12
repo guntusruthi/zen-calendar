@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sidebar } from '@/components/Sidebar';
 import { Dashboard } from '@/components/Dashboard';
 import { CalendarView } from '@/components/CalendarView';
@@ -9,6 +10,7 @@ import { Collections } from '@/components/Collections';
 import { FloatingTodoWidget } from '@/components/FloatingTodoWidget';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useReminders } from '@/hooks/useReminders';
+import { supabase } from '@/integrations/supabase/client';
 import { Event, Todo, Memory, JournalEntry, Collection, CollectionFile, ViewMode } from '@/types';
 import { 
   sampleEvents, 
@@ -17,11 +19,15 @@ import {
   sampleJournals, 
   sampleCollections 
 } from '@/data/sampleData';
+import { User } from '@supabase/supabase-js';
 
 // Simple ID generator
 const generateId = () => Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
 
 const Index = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewMode>('dashboard');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isInitialized, setIsInitialized] = useLocalStorage('breath-initialized', false);
@@ -33,9 +39,30 @@ const Index = () => {
   const [journals, setJournals] = useLocalStorage<JournalEntry[]>('breath-journals', []);
   const [collections, setCollections] = useLocalStorage<Collection[]>('breath-collections', []);
 
+  // Auth check
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+      if (!session?.user) {
+        navigate('/auth');
+      }
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+      if (!session?.user) {
+        navigate('/auth');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
   // Initialize with sample data on first load
   useEffect(() => {
-    if (!isInitialized) {
+    if (!isInitialized && user) {
       setEvents(sampleEvents);
       setTodos(sampleTodos);
       setMemories(sampleMemories);
@@ -43,7 +70,7 @@ const Index = () => {
       setCollections(sampleCollections);
       setIsInitialized(true);
     }
-  }, [isInitialized]);
+  }, [isInitialized, user]);
 
   // Initialize smart reminders
   useReminders({ events });
@@ -203,6 +230,17 @@ const Index = () => {
         return null;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
