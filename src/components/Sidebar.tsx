@@ -1,8 +1,11 @@
-import { Calendar, CheckSquare, Image, BookOpen, FolderOpen, LayoutDashboard, Swords } from 'lucide-react';
+import { Calendar, CheckSquare, Image, BookOpen, FolderOpen, LayoutDashboard, Swords, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ViewMode } from '@/types';
 import { ThemeToggle } from './ThemeToggle';
 import { DateSelector } from './DateSelector';
+import { Button } from './ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   currentView: ViewMode;
@@ -21,6 +24,13 @@ const navItems: { id: ViewMode; label: string; icon: React.ElementType }[] = [
 ];
 
 export function Sidebar({ currentView, onViewChange, selectedDate, onSelectDate }: SidebarProps) {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
+  };
+
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border flex flex-col z-50">
       {/* Logo Section */}
@@ -82,6 +92,18 @@ export function Sidebar({ currentView, onViewChange, selectedDate, onSelectDate 
           <span className="text-sm text-muted-foreground">Theme</span>
           <ThemeToggle />
         </div>
+      </div>
+
+      {/* Logout Button */}
+      <div className="p-4 border-t border-border">
+        <Button
+          variant="outline"
+          className="w-full flex items-center gap-2"
+          onClick={handleLogout}
+        >
+          <LogOut className="w-4 h-4" />
+          Sign Out
+        </Button>
       </div>
     </aside>
   );

@@ -30,6 +30,7 @@ export interface JournalEntry {
   content: string;
   date: string;
   mood?: 'happy' | 'neutral' | 'sad' | 'excited' | 'calm';
+  audioUrl?: string;
 }
 
 export interface Collection {
